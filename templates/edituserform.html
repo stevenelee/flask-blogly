@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h1>Edit a User</h1>
+  <form action="/users/new" method="POST">
+    <label for="first-name">First Name</label>
+    <input type="text" name="first-name"  value= <!-- user current name--> />
+    <label for="last-name">Last Name</label>
+    <input type="text" name="last-name" value= <!-- user current name--> />
+    <label for="image-url">Image URL</label>
+    <input type="text" name="image-url" value= <!-- user current img--> />
+    <button>Add</button>
+  </form>
+<!--  -->
+{% endblock %}
