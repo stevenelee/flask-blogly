@@ -38,26 +38,38 @@ def display_new_user_form():
 @app.post('/users/new')
 def handle_new_user():
     """creates a new user from the new user form and redirects to the user list"""
-
-    return render_template("userlist.html")
+    first_name = request.form['first-name']
+    last_name = request.form['last-name']
+    image_url = request.form['image-url']
+    # input into database
+    return redirect("/users")
 
 
 @app.get('/users/<user_id>')
 def get_user(user_id):
     """shows information of the given user"""
+    #uses user-id
+    user = 'dbname'.query.get(user_id)
+    return render_template("userdetail.html", user=user)
 
 
 @app.get('/users/<user_id>/edit')
 def edit_user(user_id):
     """display edit page for the given user"""
+    user = 'dbname'.query.get(user_id)
+    return render_template("edituserform.html", user=user)
 
 
 @app.post('/users/<user_id>/edit')
 def handle_user_edit(user_id):
     """processes the edit form and makes the changes to the given user. redirects
     to user list"""
+    #update database
+    return redirect("/users")
 
 
 @app.post('/users/<user_id>/delete')
 def delete_user(user_id):
     """delete the user"""
+    #delete from database
+    return redirect("/users")
