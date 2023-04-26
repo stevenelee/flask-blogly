@@ -1,14 +1,14 @@
-{% extends base.html %}
+{% extends 'base.html' %}
 
 {% block content %}
   <h1>Create a User</h1>
   <form action="/users/new" method="POST">
     <label for="first-name">First Name</label>
-    <input type="text" name="first-name"  value="Enter a first name" />
+    <input type="text" name="first-name"  placeholder="Enter a first name" />
     <label for="last-name">Last Name</label>
-    <input type="text" name="last-name" value="Enter a last name" />
+    <input type="text" name="last-name" placeholder="Enter a last name" />
     <label for="image-url">Image URL</label>
-    <input type="text" name="image-url" value="Provide an image of this user" />
+    <input type="text" name="image-url" placeholder="Provide an image of this user" />
     <button>Add</button>
   </form>
 
