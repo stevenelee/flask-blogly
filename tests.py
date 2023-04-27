@@ -53,6 +53,7 @@ class UserViewTestCase(TestCase):
         """Clean up any fouled transaction."""
         db.session.rollback()
 
+
     def test_list_users(self):
         with self.client as c:
             resp = c.get("/users")
@@ -60,3 +61,34 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test1_first", html)
             self.assertIn("test1_last", html)
+
+
+    def test_new_user_page(self):
+        response = self.client.get('/users/new')
+        html = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("<h1>Create a User</h1>", html)
+
+
+    def test_individual_user(self):
+        response = self.client.get(f'/users/{self.user_id}')
+        html = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("TESTING USER PAGE", html)
+
+
+    def test_edit_page(self):
+        response = self.client.get(f'/users/{self.user_id}/edit')
+        html = response.get_data(as_text=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("<h1>Edit a User</h1>", html)
+
+
+    def test_redirection(self):
+        response = self.client.get('/')
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, '/users')

@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -27,14 +27,14 @@ def get_users():
 
     users = User.query.all()
 
-    return render_template("userlist.html", users = users)
+    return render_template("user_list.html", users = users)
 
 
 @app.get('/users/new')
 def display_new_user_form():
     """display new user form"""
 
-    return render_template("newuserform.html")
+    return render_template("new_user_form.html")
 
 
 @app.post('/users/new')
@@ -47,8 +47,6 @@ def handle_new_user():
     first_name = request.form['first-name']
     last_name = request.form['last-name']
     image_url = request.form['image-url'] or None
-
-
 
     # creates instance of User class
     user = User(
@@ -68,18 +66,18 @@ def handle_new_user():
 def get_user(user_id):
     """shows information of the given user"""
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
 
-    return render_template("userdetail.html", user=user)
+    return render_template("user_detail.html", user=user)
 
 
 @app.get('/users/<user_id>/edit')
 def edit_user(user_id):
     """display edit page for the given user"""
 
-    user = User.query.get(user_id)
+    user = User.query.get_or_404(user_id)
 
-    return render_template("edituserform.html", user=user)
+    return render_template("edit_user_form.html", user=user)
 
 
 @app.post('/users/<user_id>/edit')
@@ -89,13 +87,13 @@ def handle_user_edit(user_id):
     to user list
 
     """
+    user = User.query.get_or_404(user_id)
+
     first_name = request.form['first-name']
     last_name = request.form['last-name']
-    image_url = request.form['image-url'] or None
+    image_url = request.form['image-url'] or DEFAULT_IMAGE_URL
 
     #update database
-    user = User.query.get(user_id)
-
     user.first_name = first_name
     user.last_name = last_name
     user.image_url = image_url
@@ -108,7 +106,9 @@ def handle_user_edit(user_id):
 @app.post('/users/<user_id>/delete')
 def delete_user(user_id):
     """delete the user"""
-    user = User.query.get(user_id)
+
+    user = User.query.get_or_404(user_id)
+
     db.session.delete(user)
     db.session.commit()
 
