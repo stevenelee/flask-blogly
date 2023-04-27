@@ -25,7 +25,9 @@ def to_users():
 def get_users():
     """display all users"""
 
-    return render_template("userlist.html")
+    users = User.query.all()
+
+    return render_template("userlist.html", users = users)
 
 
 @app.get('/users/new')
@@ -37,34 +39,67 @@ def display_new_user_form():
 
 @app.post('/users/new')
 def handle_new_user():
-    """creates a new user from the new user form and redirects to the user list"""
+    """
+    creates a new user from the new user form and redirects to the user list
+
+    """
+
     first_name = request.form['first-name']
     last_name = request.form['last-name']
     image_url = request.form['image-url']
+
+    # creates instance of User class
+    user = User(
+        first_name = first_name,
+        last_name = last_name,
+        image_url = image_url
+    )
+
     # input into database
+    db.session.add(user)
+    db.session.commit()
+
     return redirect("/users")
 
 
 @app.get('/users/<user_id>')
 def get_user(user_id):
     """shows information of the given user"""
-    #uses user-id
-    user = 'dbname'.query.get(user_id)
+
+    user = User.query.get(user_id)
+
     return render_template("userdetail.html", user=user)
 
 
 @app.get('/users/<user_id>/edit')
 def edit_user(user_id):
     """display edit page for the given user"""
-    user = 'dbname'.query.get(user_id)
+
+    user = User.query.get(user_id)
+
     return render_template("edituserform.html", user=user)
 
 
 @app.post('/users/<user_id>/edit')
 def handle_user_edit(user_id):
-    """processes the edit form and makes the changes to the given user. redirects
-    to user list"""
+    """
+    processes the edit form and makes the changes to the given user. redirects
+    to user list
+
+    """
+    first_name = request.form['first-name']
+    last_name = request.form['last-name']
+    image_url = request.form['image-url']
+
     #update database
+    user = User.query.get(user_id)
+
+    user.first_name = first_name
+    user.last_name = last_name
+    user.image_url = image_url
+
+    db.session.commit()
+
     return redirect("/users")
 
 
