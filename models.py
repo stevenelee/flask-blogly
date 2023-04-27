@@ -52,7 +52,9 @@ class Post(db.Model):
        nullable=False)
 
     created_at = db.Column(
-      #   CURRENT DATE
+      db.DateTime,
+      nullable = False,
+      default=db.func.now()
     )
 
     user_id = db.Column(

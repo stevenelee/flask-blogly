@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, request, redirect, render_template
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, DEFAULT_IMAGE_URL
+from models import db, connect_db, User, Post, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -67,8 +67,9 @@ def get_user(user_id):
     """shows information of the given user"""
 
     user = User.query.get_or_404(user_id)
+    posts = Post.query.filter_by(user_id = user.id)
 
-    return render_template("user_detail.html", user=user)
+    return render_template("user_detail.html", user=user, posts=posts)
 
 
 @app.get('/users/<user_id>/edit')
@@ -113,3 +114,68 @@ def delete_user(user_id):
     db.session.commit()
 
     return redirect("/users")
+
+
+@app.get('/users/<user_id>/posts/new')
+def display_post_form(user_id):
+    """displays new post form"""
+
+    user = User.query.get_or_404(user_id)
+
+    return render_template("new_post_form.html", user=user)
+
+
+@app.post('/users/<user_id>/posts/new')
+def handle_new_post(user_id):
+    """
+    takes inputs from post form and adds that information to the database
+    redirects to the user detail page
+
+    """
+
+    title = request.form['title']
+    content = request.form['content']
+
+    post = Post(
+        title = title,
+        content = content,
+        user_id = user_id
+        )
+
+    db.session.add(post)
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')
+
+
+@app.get('/posts/<post_id>')
+def show_post(post_id):
+    """displays a given post"""
+
+    post =  Post.query.get_or_404(post_id)
+
+    return render_template('post_detail.html', post = post)
+
+
+@app.route('/posts/<post_id>/edit', methods=['GET', 'POST'])
+def display_post_editor(post_id):
+    """displays the edit post page"""
+
+    post =  Post.query.get_or_404(post_id)
+
+    user_id = post.user_id
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+
+        post.title = title
+        post.content = content
+
+        db.session.commit()
+
+        return redirect(f'post_detail.html/{post_id}')
+
+    elif request.method == 'GET':
+
+        return redirect(f'/users/{user_id}')
