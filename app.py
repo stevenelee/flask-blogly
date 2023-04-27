@@ -46,7 +46,9 @@ def handle_new_user():
 
     first_name = request.form['first-name']
     last_name = request.form['last-name']
-    image_url = request.form['image-url']
+    image_url = request.form['image-url'] or None
+
+
 
     # creates instance of User class
     user = User(
@@ -89,7 +91,7 @@ def handle_user_edit(user_id):
     """
     first_name = request.form['first-name']
     last_name = request.form['last-name']
-    image_url = request.form['image-url']
+    image_url = request.form['image-url'] or None
 
     #update database
     user = User.query.get(user_id)
@@ -106,5 +108,8 @@ def handle_user_edit(user_id):
 @app.post('/users/<user_id>/delete')
 def delete_user(user_id):
     """delete the user"""
-    #delete from database
+    user = User.query.get(user_id)
+    db.session.delete(user)
+    db.session.commit()
+
     return redirect("/users")
