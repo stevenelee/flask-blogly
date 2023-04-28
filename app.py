@@ -67,7 +67,7 @@ def get_user(user_id):
     """shows information of the given user"""
 
     user = User.query.get_or_404(user_id)
-    posts = Post.query.filter_by(user_id = user.id)
+    posts = user.posts
 
     return render_template("user_detail.html", user=user, posts=posts)
 
@@ -153,8 +153,9 @@ def show_post(post_id):
     """displays a given post"""
 
     post =  Post.query.get_or_404(post_id)
+    user = post.user
 
-    return render_template('post_detail.html', post = post)
+    return render_template('post_detail.html', user=user, post=post)
 
 
 @app.route('/posts/<post_id>/edit', methods=['GET', 'POST'])
